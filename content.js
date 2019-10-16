@@ -18,6 +18,10 @@ if(result == jQ)return false;
 res(result);
 
 };
+function welcome(f){
+
+    
+};
 chrome.runtime.onMessage.addListener((request,_,respond) => {
 if(request.type == 'dialog' && request.id.beginsWith(window.location.href)){
     var index = request.id.indexOf('#');
@@ -31,8 +35,9 @@ $((v) => respond({}))
 };
 if(request.type == 'canvas')return canvas(request.data,respond);
 if(request.type == 'block')return block(request,respond);
+if(request.type == 'welcome' && !request.isExternal){welcome(respond); return true};
 });
 $(function(){
-
+if(!localStorage.getItem('welcome'))welcome((v) => {localStorage.setItem('welcome','done')});
 
 }) 
