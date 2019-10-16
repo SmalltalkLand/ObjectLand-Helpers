@@ -11,6 +11,13 @@ if(!request.id in canvases){respond({error: true}); return false};
 
 return cact(canvases[request.id],request,respond)
 };
+function block(req,res){
+var jQ = $(req.id);
+var result = jQ[req.sel](...req.args);
+if(result == jQ)return false;
+res(result);
+
+};
 chrome.runtime.onMessage.addListener((request,_,respond) => {
 if(request.type == 'dialog' && request.id.beginsWith(window.location.href)){
     var index = request.id.indexOf('#');
@@ -22,7 +29,8 @@ if(request.type == 'onload' && request.data == window.location.href){
 $((v) => respond({}))
     return true;
 };
-if(request.type == 'canvas')return canvas(request.data,respond)
+if(request.type == 'canvas')return canvas(request.data,respond);
+if(request.type == 'block')return block(request,respond);
 });
 $(function(){
 
