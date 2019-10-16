@@ -5,9 +5,9 @@ if(request.type == 'get'){respond(canvas[request.prop]); return false};
 if(request.type in canvas){respond(canvas[request.type](...request.args)); return false}; 
 
 };
-function canvas(request,respond){
-    if(request.type == 'adopt'){canvases[request.id] = $(request.sel).get(0).getContext('2d'); respond({sucess: true}); return false};
-if(!request.id in canvases){respond({error: true}); return false};
+function canvas(request,respond,url){
+    if(request.type == 'adopt' && url == window.location.href){canvases[request.id] = $(request.sel).get(0).getContext('2d'); respond({sucess: true}); return false};
+if(!request.id in canvases){return false};
 
 return cact(canvases[request.id],request,respond)
 };
@@ -19,8 +19,11 @@ res(result);
 
 };
 function welcome(f){
+var elem = $('<div>Welcome To The ObjectLand Extension</div>');
+$('body').append(elem);
+elem.dialog();
+elem.on('dialogclose',(ev) => {f({})});
 
-    
 };
 chrome.runtime.onMessage.addListener((request,_,respond) => {
 if(request.type == 'dialog' && request.id.beginsWith(window.location.href)){
@@ -33,7 +36,7 @@ if(request.type == 'onload' && request.data == window.location.href){
 $((v) => respond({}))
     return true;
 };
-if(request.type == 'canvas')return canvas(request.data,respond);
+if(request.type == 'canvas')return canvas(request.data,respond,request.src);
 if(request.type == 'block')return block(request,respond);
 if(request.type == 'welcome' && !request.isExternal){welcome(respond); return true};
 });
