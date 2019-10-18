@@ -21,8 +21,8 @@ res(result);
 function welcome(f){
 var elem = $('<div>Welcome To The ObjectLand Extension</div>');
 $('body').append(elem);
-elem.dialog();
-elem.on('dialogclose',(ev) => {f({})});
+elem.dialog({});
+elem.on('dialogclose',(ev,ui) => {f({})});
 
 };
 chrome.runtime.onMessage.addListener((request,_,respond) => {
@@ -41,6 +41,8 @@ if(request.type == 'block')return block(request,respond);
 if(request.type == 'welcome' && !request.isExternal){welcome(respond); return true};
 });
 $(function(){
-if(!localStorage.getItem('welcome'))welcome((v) => {localStorage.setItem('welcome','done')});
+chrome.storage.sync.get(['welcome'],function(result){
+if(result.welcome === undefined)welcome((v) => {chrome.storage.sync.set({welcome: v})})
 
+});
 }) 
