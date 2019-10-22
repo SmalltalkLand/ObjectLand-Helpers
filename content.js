@@ -40,9 +40,39 @@ if(request.type == 'canvas')return canvas(request.data,respond,request.src);
 if(request.type == 'block')return block(request,respond);
 if(request.type == 'welcome' && !request.isExternal){welcome(respond); return true};
 });
+Vue.component('desktopManager',{
+    data: () => {return {windows: []}},
+    props: ['defaultWindows','debug'],
+    mounted(){this.$on('olmessage',(evt) => {
+var ce = new CustomEvent(evt.name);
+ce.data = evt.data;
+this.$el.dispatchEvent(ce);
+
+    });
+
+},
+    computed: {realWindows(){return this.windows.concat(this.defaultWindows).filter((w) => w.isVisible).map((w) => w.vueComponent || w)}},
+    template: '<div><component v-for = "win in realWindows" :is = "win" :debug = "debug"></component></div>',
+    });
+Vue.component('chromeDesktopManager',{
+template: '<desktopManager ref = "desktop" :debug = "debug" :defaultWindows = "defaultWindows"></desktopManager>',
+props: ['defaultWindows','debug'],
+mounted(){
+chrome.runtime.omMessage.addListener(this.$f = (evt,_,respond) => {this.$refs.desktop.$emit('olmessage',{name: 'olmessage',data: evt})})
+
+},
+beforeDestroy(){
+    chrome.runtime.onMessage.removeListener(this.$f);
+
+},
+})
 $(function(){
 chrome.storage.sync.get(['welcome'],function(result){
 if(result.welcome === undefined)welcome((v) => {chrome.storage.sync.set({welcome: v})})
-
+var el;
+new Vue({
+    data: {debug: false},
+el: (el = $('.ol.link.0').add($('<div class = "ol link 0"></div>')).append('<chromeDesktopManager :defaultWindows = "[]" :debug = "debug"></chromeDesktopManager>').get(0)),
+});
 });
 }) 

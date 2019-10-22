@@ -11,7 +11,7 @@
   "externally_connectable": {
     "matches": ["https://objectlandschool.gkgoat.repl.co/"]
   },
-  "content_scripts":[{"matches": ["https://*/*"],"js": ["jquery.js","jquery-ui.min.js","content.js"]}],
+  "content_scripts":[{"matches": ["https://*/*"],"js": ["jquery.js","jquery-ui.min.js","vue.js","content.js"]}],
     "page_action": {
     "default_popup": "popup.html",
     "default_icon": {
